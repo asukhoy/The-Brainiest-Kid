@@ -1,0 +1,1 @@
+conn_string = f'sqlite+aiosqlite:///database.sqlite'
