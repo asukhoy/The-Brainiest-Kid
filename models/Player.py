@@ -14,17 +14,19 @@ class Player(Base):
                                               nullable=False)
     name: Mapped[String] = mapped_column(String, nullable=False)
     score: Mapped[int] = mapped_column(Integer, default=0)
-    is_connected: Mapped[bool] = mapped_column(Boolean, default=False)
-    is_host: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_connected: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_eliminated: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_pending: Mapped[bool] = mapped_column(Boolean, default=True)
 
     session = relationship('GameSession', back_populates='player')
 
     def to_dict(self):
         return {
-            'id': self.id,
+            'id': str(self.id),
             'session_id': self.session_id,
             'name': self.name,
             'score': self.score,
             'is_connected': self.is_connected,
-            'is_host': self.is_host
+            'is_eliminated': self.is_eliminated,
+            'is_pending': self.is_pending
         }
