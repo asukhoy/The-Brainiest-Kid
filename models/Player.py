@@ -10,7 +10,7 @@ class Player(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True,
                                           default=uuid.uuid4)
     session_id: Mapped[int] = mapped_column(Integer,
-                                              ForeignKey('sessions.id'),
+                                              ForeignKey('sessions.code'),
                                               nullable=False)
     name: Mapped[String] = mapped_column(String, nullable=False)
     score: Mapped[int] = mapped_column(Integer, default=0)

@@ -1,8 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
-
 from models import Player
-from .get_session_by_code import get_session_by_code
 
 logger = logging.getLogger('app')
 
@@ -12,9 +10,8 @@ async def create_player(
         name: str,
         db_session: AsyncSession
 ):
-    session = await get_session_by_code(session_code, db_session)
     player = Player(
-        session_id=session.id,
+        session_id=session_code,
         name=name
     )
 
