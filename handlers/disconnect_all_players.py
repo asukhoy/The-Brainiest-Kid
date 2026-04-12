@@ -14,5 +14,4 @@ async def disconnect_all_players(session_code: int, db_session: AsyncSession, we
 
     await websocket_manager.disconnect_host(session_code)
 
-    session = await crud.get_session_by_code(session_code, db_session)
-    await crud.delete_session(db_session, session.id)
+    await crud.delete_session(db_session, session_code)

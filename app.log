@@ -9424,3 +9424,858 @@ WHERE ? = players.session_id
 2026-04-08 14:05:02,590 INFO DELETE FROM sessions WHERE sessions.id = ?
 2026-04-08 14:05:02,590 INFO [generated in 0.00033s] (4,)
 2026-04-08 14:05:02,593 INFO COMMIT
+2026-04-10 19:53:29,762 INFO BEGIN (implicit)
+2026-04-10 19:53:29,764 INFO PRAGMA main.table_info("sessions")
+2026-04-10 19:53:29,764 INFO [raw sql] ()
+2026-04-10 19:53:29,768 INFO PRAGMA temp.table_info("sessions")
+2026-04-10 19:53:29,768 INFO [raw sql] ()
+2026-04-10 19:53:29,769 INFO PRAGMA main.table_info("players")
+2026-04-10 19:53:29,769 INFO [raw sql] ()
+2026-04-10 19:53:29,770 INFO PRAGMA temp.table_info("players")
+2026-04-10 19:53:29,770 INFO [raw sql] ()
+2026-04-10 19:53:29,772 INFO 
+CREATE TABLE sessions (
+	code INTEGER NOT NULL, 
+	path VARCHAR NOT NULL, 
+	current_round INTEGER NOT NULL, 
+	current_question INTEGER NOT NULL, 
+	PRIMARY KEY (code)
+)
+
+
+2026-04-10 19:53:29,772 INFO [no key 0.00026s] ()
+2026-04-10 19:53:29,788 INFO 
+CREATE TABLE players (
+	id UUID NOT NULL, 
+	session_id INTEGER NOT NULL, 
+	name VARCHAR NOT NULL, 
+	score INTEGER NOT NULL, 
+	is_connected BOOLEAN NOT NULL, 
+	is_eliminated BOOLEAN NOT NULL, 
+	is_pending BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(session_id) REFERENCES sessions (code)
+)
+
+
+2026-04-10 19:53:29,788 INFO [no key 0.00022s] ()
+2026-04-10 19:53:29,798 INFO COMMIT
+2026-04-10 19:58:36,933 INFO afsdfhjaosif
+2026-04-10 19:58:36,934 INFO BEGIN (implicit)
+2026-04-10 19:58:36,965 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-10 19:58:36,966 INFO [generated in 0.00026s] (158566,)
+2026-04-10 19:58:36,969 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-10 19:58:36,969 INFO [generated in 0.00026s] (158566, 'a', 1, 1)
+2026-04-10 19:58:36,972 INFO COMMIT
+2026-04-10 19:58:36,984 INFO BEGIN (implicit)
+2026-04-10 19:58:36,985 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-10 19:58:36,986 INFO [generated in 0.00030s] (158566,)
+2026-04-10 19:58:36,993 INFO ROLLBACK
+2026-04-10 19:58:37,475 INFO Got it
+2026-04-10 19:58:37,476 INFO BEGIN (implicit)
+2026-04-10 19:58:37,477 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 19:58:37,478 INFO [generated in 0.00045s] (158566,)
+2026-04-10 19:58:37,483 INFO Host connected to session 158566
+2026-04-10 19:59:08,472 INFO BEGIN (implicit)
+2026-04-10 19:59:08,474 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-10 19:59:08,474 INFO [generated in 0.00030s] (158566, 'pl1')
+2026-04-10 19:59:08,477 INFO INSERT INTO players (id, session_id, name, score, is_connected, is_eliminated, is_pending) VALUES (?, ?, ?, ?, ?, ?, ?)
+2026-04-10 19:59:08,477 INFO [generated in 0.00041s] ('ca42aca5468c4cef8aba61c98fd01092', 158566, 'pl1', 0, 1, 0, 1)
+2026-04-10 19:59:08,480 INFO COMMIT
+2026-04-10 19:59:08,491 INFO BEGIN (implicit)
+2026-04-10 19:59:08,492 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 19:59:08,492 INFO [generated in 0.00021s] ('ca42aca5468c4cef8aba61c98fd01092',)
+2026-04-10 19:59:08,494 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 19:59:08,494 INFO [cached since 31.02s ago] (158566,)
+2026-04-10 19:59:08,499 INFO ROLLBACK
+2026-04-10 19:59:08,633 INFO Got it to endpoint
+2026-04-10 19:59:08,634 INFO BEGIN (implicit)
+2026-04-10 19:59:08,636 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 19:59:08,636 INFO [generated in 0.00035s] ('ca42aca5468c4cef8aba61c98fd01092',)
+2026-04-10 19:59:08,639 INFO Player: ca42aca5-468c-4cef-8aba-61c98fd01092 connected to session 158566
+2026-04-10 19:59:08,639 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 19:59:08,640 INFO [cached since 31.16s ago] (158566,)
+2026-04-10 19:59:08,644 INFO message sent to Player: ca42aca5-468c-4cef-8aba-61c98fd01092 connected to session 158566
+2026-04-10 19:59:30,466 INFO BEGIN (implicit)
+2026-04-10 19:59:30,466 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 19:59:30,466 INFO [cached since 21.83s ago] ('ca42aca5468c4cef8aba61c98fd01092',)
+2026-04-10 19:59:30,468 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 19:59:30,468 INFO [cached since 21.83s ago] ('ca42aca5468c4cef8aba61c98fd01092',)
+2026-04-10 19:59:30,472 INFO DELETE FROM players WHERE players.id = ?
+2026-04-10 19:59:30,472 INFO [generated in 0.00028s] ('ca42aca5468c4cef8aba61c98fd01092',)
+2026-04-10 19:59:30,511 INFO COMMIT
+2026-04-10 19:59:30,522 INFO BEGIN (implicit)
+2026-04-10 19:59:30,522 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 19:59:30,523 INFO [cached since 53.05s ago] (158566,)
+2026-04-10 19:59:30,525 INFO ROLLBACK
+2026-04-10 19:59:30,551 INFO Player disconnected from session 158566
+2026-04-10 19:59:30,551 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 19:59:30,551 INFO [cached since 53.07s ago] (158566,)
+2026-04-10 19:59:30,553 INFO ROLLBACK
+2026-04-10 19:59:39,736 INFO BEGIN (implicit)
+2026-04-10 19:59:39,736 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-10 19:59:39,736 INFO [cached since 31.26s ago] (158566, 'pl2')
+2026-04-10 19:59:39,738 INFO INSERT INTO players (id, session_id, name, score, is_connected, is_eliminated, is_pending) VALUES (?, ?, ?, ?, ?, ?, ?)
+2026-04-10 19:59:39,738 INFO [cached since 31.26s ago] ('fcfc0447f7524f33be9d5ac3b07fd7b7', 158566, 'pl2', 0, 1, 0, 1)
+2026-04-10 19:59:39,741 INFO COMMIT
+2026-04-10 19:59:39,752 INFO BEGIN (implicit)
+2026-04-10 19:59:39,752 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 19:59:39,753 INFO [cached since 31.26s ago] ('fcfc0447f7524f33be9d5ac3b07fd7b7',)
+2026-04-10 19:59:39,754 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 19:59:39,754 INFO [cached since 62.28s ago] (158566,)
+2026-04-10 19:59:39,756 INFO ROLLBACK
+2026-04-10 19:59:39,786 INFO Got it to endpoint
+2026-04-10 19:59:39,786 INFO BEGIN (implicit)
+2026-04-10 19:59:39,787 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 19:59:39,787 INFO [cached since 31.15s ago] ('fcfc0447f7524f33be9d5ac3b07fd7b7',)
+2026-04-10 19:59:39,789 INFO Player: fcfc0447-f752-4f33-be9d-5ac3b07fd7b7 connected to session 158566
+2026-04-10 19:59:39,789 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 19:59:39,790 INFO [cached since 62.31s ago] (158566,)
+2026-04-10 19:59:39,792 INFO message sent to Player: fcfc0447-f752-4f33-be9d-5ac3b07fd7b7 connected to session 158566
+2026-04-10 19:59:51,252 INFO Player disconnected from session 158566
+2026-04-10 19:59:51,254 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 19:59:51,254 INFO [cached since 73.78s ago] (158566,)
+2026-04-10 19:59:51,259 INFO ROLLBACK
+2026-04-10 20:00:02,841 INFO BEGIN (implicit)
+2026-04-10 20:00:02,841 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-10 20:00:02,841 INFO [cached since 54.37s ago] (158566, 'pl1')
+2026-04-10 20:00:02,843 INFO INSERT INTO players (id, session_id, name, score, is_connected, is_eliminated, is_pending) VALUES (?, ?, ?, ?, ?, ?, ?)
+2026-04-10 20:00:02,843 INFO [cached since 54.37s ago] ('85f9d337edc541339d5ab55c4a0b39c0', 158566, 'pl1', 0, 1, 0, 1)
+2026-04-10 20:00:02,883 INFO COMMIT
+2026-04-10 20:00:02,893 INFO BEGIN (implicit)
+2026-04-10 20:00:02,893 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:00:02,893 INFO [cached since 54.4s ago] ('85f9d337edc541339d5ab55c4a0b39c0',)
+2026-04-10 20:00:02,896 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:00:02,896 INFO [cached since 85.42s ago] (158566,)
+2026-04-10 20:00:02,898 INFO ROLLBACK
+2026-04-10 20:00:03,000 INFO Got it to endpoint
+2026-04-10 20:00:03,000 INFO BEGIN (implicit)
+2026-04-10 20:00:03,001 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:00:03,001 INFO [cached since 54.37s ago] ('85f9d337edc541339d5ab55c4a0b39c0',)
+2026-04-10 20:00:03,002 INFO Player: 85f9d337-edc5-4133-9d5a-b55c4a0b39c0 connected to session 158566
+2026-04-10 20:00:03,003 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:00:03,003 INFO [cached since 85.53s ago] (158566,)
+2026-04-10 20:00:03,007 INFO message sent to Player: 85f9d337-edc5-4133-9d5a-b55c4a0b39c0 connected to session 158566
+2026-04-10 20:00:07,633 INFO BEGIN (implicit)
+2026-04-10 20:00:07,633 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:00:07,633 INFO [cached since 59s ago] ('85f9d337edc541339d5ab55c4a0b39c0',)
+2026-04-10 20:00:07,635 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:00:07,635 INFO [cached since 59s ago] ('85f9d337edc541339d5ab55c4a0b39c0',)
+2026-04-10 20:00:07,637 INFO DELETE FROM players WHERE players.id = ?
+2026-04-10 20:00:07,637 INFO [cached since 37.17s ago] ('85f9d337edc541339d5ab55c4a0b39c0',)
+2026-04-10 20:00:07,657 INFO COMMIT
+2026-04-10 20:00:07,667 INFO BEGIN (implicit)
+2026-04-10 20:00:07,667 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:00:07,667 INFO [cached since 90.19s ago] (158566,)
+2026-04-10 20:00:07,671 INFO ROLLBACK
+2026-04-10 20:00:07,697 INFO Player disconnected from session 158566
+2026-04-10 20:00:07,698 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:00:07,698 INFO [cached since 90.22s ago] (158566,)
+2026-04-10 20:00:07,700 INFO ROLLBACK
+2026-04-10 20:00:19,993 INFO BEGIN (implicit)
+2026-04-10 20:00:19,993 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-10 20:00:19,993 INFO [cached since 71.52s ago] (158566, 'pl1')
+2026-04-10 20:00:19,995 INFO INSERT INTO players (id, session_id, name, score, is_connected, is_eliminated, is_pending) VALUES (?, ?, ?, ?, ?, ?, ?)
+2026-04-10 20:00:19,995 INFO [cached since 71.52s ago] ('e0c23ba805a64b05adc1ff8cd4147f92', 158566, 'pl1', 0, 1, 0, 1)
+2026-04-10 20:00:20,041 INFO COMMIT
+2026-04-10 20:00:20,058 INFO BEGIN (implicit)
+2026-04-10 20:00:20,058 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:00:20,059 INFO [cached since 71.57s ago] ('e0c23ba805a64b05adc1ff8cd4147f92',)
+2026-04-10 20:00:20,061 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:00:20,061 INFO [cached since 102.6s ago] (158566,)
+2026-04-10 20:00:20,064 INFO ROLLBACK
+2026-04-10 20:00:20,096 INFO Got it to endpoint
+2026-04-10 20:00:20,096 INFO BEGIN (implicit)
+2026-04-10 20:00:20,097 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:00:20,097 INFO [cached since 71.46s ago] ('e0c23ba805a64b05adc1ff8cd4147f92',)
+2026-04-10 20:00:20,099 INFO Player: e0c23ba8-05a6-4b05-adc1-ff8cd4147f92 connected to session 158566
+2026-04-10 20:00:20,100 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:00:20,101 INFO [cached since 102.6s ago] (158566,)
+2026-04-10 20:00:20,105 INFO message sent to Player: e0c23ba8-05a6-4b05-adc1-ff8cd4147f92 connected to session 158566
+2026-04-10 20:01:59,012 INFO Player disconnected from session 158566
+2026-04-10 20:01:59,013 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:01:59,013 INFO [cached since 201.5s ago] (158566,)
+2026-04-10 20:01:59,013 INFO Host disconnected from session 158566
+2026-04-10 20:01:59,014 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:01:59,014 INFO [cached since 201.5s ago] (158566,)
+2026-04-10 20:01:59,017 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:01:59,017 INFO [cached since 170.4s ago] ('fcfc0447f7524f33be9d5ac3b07fd7b7',)
+2026-04-10 20:01:59,017 INFO ROLLBACK
+2026-04-10 20:01:59,019 INFO DELETE FROM players WHERE players.id = ?
+2026-04-10 20:01:59,019 INFO [cached since 148.5s ago] ('fcfc0447f7524f33be9d5ac3b07fd7b7',)
+2026-04-10 20:01:59,021 INFO COMMIT
+2026-04-10 20:01:59,031 INFO BEGIN (implicit)
+2026-04-10 20:01:59,031 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:01:59,031 INFO [cached since 170.4s ago] ('e0c23ba805a64b05adc1ff8cd4147f92',)
+2026-04-10 20:01:59,033 INFO DELETE FROM players WHERE players.id = ?
+2026-04-10 20:01:59,033 INFO [cached since 148.6s ago] ('e0c23ba805a64b05adc1ff8cd4147f92',)
+2026-04-10 20:01:59,035 INFO COMMIT
+2026-04-10 20:01:59,044 INFO BEGIN (implicit)
+2026-04-10 20:01:59,045 INFO SELECT sessions.code AS sessions_code, sessions.path AS sessions_path, sessions.current_round AS sessions_current_round, sessions.current_question AS sessions_current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-10 20:01:59,045 INFO [generated in 0.00014s] (158566,)
+2026-04-10 20:01:59,048 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE ? = players.session_id
+2026-04-10 20:01:59,048 INFO [generated in 0.00031s] (158566,)
+2026-04-10 20:01:59,050 INFO DELETE FROM sessions WHERE sessions.code = ?
+2026-04-10 20:01:59,050 INFO [generated in 0.00022s] (158566,)
+2026-04-10 20:01:59,052 INFO COMMIT
+2026-04-10 20:03:27,870 INFO BEGIN (implicit)
+2026-04-10 20:03:27,870 INFO PRAGMA main.table_info("sessions")
+2026-04-10 20:03:27,870 INFO [raw sql] ()
+2026-04-10 20:03:27,872 INFO PRAGMA main.table_info("players")
+2026-04-10 20:03:27,872 INFO [raw sql] ()
+2026-04-10 20:03:27,873 INFO COMMIT
+2026-04-10 20:03:28,390 INFO Got it
+2026-04-10 20:03:28,391 INFO BEGIN (implicit)
+2026-04-10 20:03:28,397 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:03:28,397 INFO [generated in 0.00028s] (158566,)
+2026-04-10 20:03:28,402 INFO Host connected to session 158566
+2026-04-10 20:03:32,330 INFO Got it to endpoint
+2026-04-10 20:03:32,333 INFO BEGIN (implicit)
+2026-04-10 20:03:32,335 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:03:32,335 INFO [generated in 0.00027s] ('e0c23ba805a64b05adc1ff8cd4147f92',)
+2026-04-10 20:03:32,337 INFO ROLLBACK
+2026-04-10 20:03:35,490 INFO Host disconnected from session 158566
+2026-04-10 20:03:35,491 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:03:35,491 INFO [cached since 7.095s ago] (158566,)
+2026-04-10 20:03:35,494 INFO SELECT sessions.code AS sessions_code, sessions.path AS sessions_path, sessions.current_round AS sessions_current_round, sessions.current_question AS sessions_current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-10 20:03:35,495 INFO [generated in 0.00029s] (158566,)
+2026-04-10 20:03:35,496 INFO ROLLBACK
+2026-04-10 20:03:38,320 INFO Got it to endpoint
+2026-04-10 20:03:38,320 INFO BEGIN (implicit)
+2026-04-10 20:03:38,320 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:03:38,320 INFO [cached since 5.985s ago] ('e0c23ba805a64b05adc1ff8cd4147f92',)
+2026-04-10 20:03:38,322 INFO ROLLBACK
+2026-04-10 20:03:44,325 INFO Got it to endpoint
+2026-04-10 20:03:44,326 INFO BEGIN (implicit)
+2026-04-10 20:03:44,326 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:03:44,326 INFO [cached since 11.99s ago] ('e0c23ba805a64b05adc1ff8cd4147f92',)
+2026-04-10 20:03:44,328 INFO ROLLBACK
+2026-04-10 20:03:45,832 INFO afsdfhjaosif
+2026-04-10 20:03:45,833 INFO BEGIN (implicit)
+2026-04-10 20:03:45,833 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-10 20:03:45,834 INFO [generated in 0.00023s] (605165,)
+2026-04-10 20:03:45,837 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-10 20:03:45,837 INFO [generated in 0.00029s] (605165, 'a', 1, 1)
+2026-04-10 20:03:45,882 INFO COMMIT
+2026-04-10 20:03:45,893 INFO BEGIN (implicit)
+2026-04-10 20:03:45,894 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-10 20:03:45,895 INFO [generated in 0.00023s] (605165,)
+2026-04-10 20:03:45,896 INFO ROLLBACK
+2026-04-10 20:03:45,968 INFO Got it
+2026-04-10 20:03:45,969 INFO BEGIN (implicit)
+2026-04-10 20:03:45,969 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:03:45,969 INFO [cached since 17.57s ago] (605165,)
+2026-04-10 20:03:45,972 INFO Host connected to session 605165
+2026-04-10 20:03:49,510 INFO Got it to endpoint
+2026-04-10 20:03:49,511 INFO BEGIN (implicit)
+2026-04-10 20:03:49,511 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:03:49,511 INFO [cached since 17.18s ago] ('e0c23ba805a64b05adc1ff8cd4147f92',)
+2026-04-10 20:03:49,512 INFO ROLLBACK
+2026-04-10 20:04:00,062 INFO BEGIN (implicit)
+2026-04-10 20:04:00,062 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-10 20:04:00,063 INFO [generated in 0.00021s] (605165, 'afasd')
+2026-04-10 20:04:00,065 INFO INSERT INTO players (id, session_id, name, score, is_connected, is_eliminated, is_pending) VALUES (?, ?, ?, ?, ?, ?, ?)
+2026-04-10 20:04:00,065 INFO [generated in 0.00028s] ('9a0b3301e84e4e48876691bed36f5fdd', 605165, 'afasd', 0, 1, 0, 1)
+2026-04-10 20:04:00,068 INFO COMMIT
+2026-04-10 20:04:00,079 INFO BEGIN (implicit)
+2026-04-10 20:04:00,080 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:04:00,080 INFO [generated in 0.00023s] ('9a0b3301e84e4e48876691bed36f5fdd',)
+2026-04-10 20:04:00,082 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:04:00,082 INFO [cached since 31.69s ago] (605165,)
+2026-04-10 20:04:00,083 INFO ROLLBACK
+2026-04-10 20:04:00,197 INFO Got it to endpoint
+2026-04-10 20:04:00,197 INFO BEGIN (implicit)
+2026-04-10 20:04:00,197 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:04:00,197 INFO [cached since 27.86s ago] ('9a0b3301e84e4e48876691bed36f5fdd',)
+2026-04-10 20:04:00,199 INFO Player: 9a0b3301-e84e-4e48-8766-91bed36f5fdd connected to session 605165
+2026-04-10 20:04:00,200 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:04:00,200 INFO [cached since 31.8s ago] (605165,)
+2026-04-10 20:04:00,203 INFO message sent to Player: 9a0b3301-e84e-4e48-8766-91bed36f5fdd connected to session 605165
+2026-04-10 20:05:14,018 INFO Host disconnected from session 605165
+2026-04-10 20:05:14,019 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:05:14,019 INFO [cached since 105.6s ago] (605165,)
+2026-04-10 20:05:14,019 INFO Player disconnected from session 605165
+2026-04-10 20:05:14,020 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-10 20:05:14,020 INFO [cached since 105.6s ago] (605165,)
+2026-04-10 20:05:14,021 INFO ROLLBACK
+2026-04-10 20:05:14,022 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE players.id = ?
+2026-04-10 20:05:14,022 INFO [cached since 101.7s ago] ('9a0b3301e84e4e48876691bed36f5fdd',)
+2026-04-10 20:05:14,025 INFO DELETE FROM players WHERE players.id = ?
+2026-04-10 20:05:14,025 INFO [generated in 0.00023s] ('9a0b3301e84e4e48876691bed36f5fdd',)
+2026-04-10 20:05:14,051 INFO COMMIT
+2026-04-10 20:05:14,062 INFO BEGIN (implicit)
+2026-04-10 20:05:14,063 INFO SELECT sessions.code AS sessions_code, sessions.path AS sessions_path, sessions.current_round AS sessions_current_round, sessions.current_question AS sessions_current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-10 20:05:14,063 INFO [cached since 98.57s ago] (605165,)
+2026-04-10 20:05:14,066 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE ? = players.session_id
+2026-04-10 20:05:14,066 INFO [generated in 0.00024s] (605165,)
+2026-04-10 20:05:14,068 INFO DELETE FROM sessions WHERE sessions.code = ?
+2026-04-10 20:05:14,069 INFO [generated in 0.00057s] (605165,)
+2026-04-10 20:05:14,071 INFO COMMIT
+2026-04-11 15:40:26,147 INFO BEGIN (implicit)
+2026-04-11 15:40:26,149 INFO PRAGMA main.table_info("sessions")
+2026-04-11 15:40:26,149 INFO [raw sql] ()
+2026-04-11 15:40:26,155 INFO PRAGMA main.table_info("players")
+2026-04-11 15:40:26,155 INFO [raw sql] ()
+2026-04-11 15:40:26,157 INFO COMMIT
+2026-04-11 15:49:42,675 INFO afsdfhjaosif
+2026-04-11 15:49:42,677 INFO BEGIN (implicit)
+2026-04-11 15:49:42,695 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-11 15:49:42,696 INFO [generated in 0.00068s] (644437,)
+2026-04-11 15:49:42,702 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-11 15:49:42,702 INFO [generated in 0.00073s] (644437, 'a', 1, 1)
+2026-04-11 15:49:42,707 INFO COMMIT
+2026-04-11 15:49:42,719 INFO BEGIN (implicit)
+2026-04-11 15:49:42,722 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-11 15:49:42,722 INFO [generated in 0.00043s] (644437,)
+2026-04-11 15:49:42,730 INFO ROLLBACK
+2026-04-11 15:49:44,246 INFO Got it
+2026-04-11 15:49:44,248 INFO BEGIN (implicit)
+2026-04-11 15:49:44,251 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-11 15:49:44,251 INFO [generated in 0.00049s] (644437,)
+2026-04-11 15:49:44,260 INFO Host connected to session 644437
+2026-04-11 15:50:00,468 INFO Host disconnected from session 644437
+2026-04-11 15:50:00,469 INFO ROLLBACK
+2026-04-11 15:54:01,277 INFO BEGIN (implicit)
+2026-04-11 15:54:01,278 INFO PRAGMA main.table_info("sessions")
+2026-04-11 15:54:01,278 INFO [raw sql] ()
+2026-04-11 15:54:01,280 INFO PRAGMA main.table_info("players")
+2026-04-11 15:54:01,281 INFO [raw sql] ()
+2026-04-11 15:54:01,282 INFO COMMIT
+2026-04-11 15:54:13,144 INFO afsdfhjaosif
+2026-04-11 15:54:13,146 INFO BEGIN (implicit)
+2026-04-11 15:54:13,159 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-11 15:54:13,159 INFO [generated in 0.00085s] (608645,)
+2026-04-11 15:54:13,166 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-11 15:54:13,167 INFO [generated in 0.00063s] (608645, 'a', 1, 1)
+2026-04-11 15:54:13,189 INFO COMMIT
+2026-04-11 15:54:13,213 INFO BEGIN (implicit)
+2026-04-11 15:54:13,216 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-11 15:54:13,216 INFO [generated in 0.00064s] (608645,)
+2026-04-11 15:54:13,221 INFO ROLLBACK
+2026-04-11 15:54:13,593 INFO Got it
+2026-04-11 15:54:13,595 INFO BEGIN (implicit)
+2026-04-11 15:54:13,597 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-11 15:54:13,597 INFO [generated in 0.00045s] (608645,)
+2026-04-11 15:54:13,603 INFO Host connected to session 608645
+2026-04-11 15:54:17,167 INFO Host disconnected from session 608645
+2026-04-11 15:54:17,167 INFO ROLLBACK
+2026-04-11 15:57:00,898 INFO afsdfhjaosif
+2026-04-11 15:57:00,899 INFO BEGIN (implicit)
+2026-04-11 15:57:00,899 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-11 15:57:00,899 INFO [cached since 167.7s ago] (915363,)
+2026-04-11 15:57:00,903 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-11 15:57:00,903 INFO [cached since 167.7s ago] (915363, 'a', 1, 1)
+2026-04-11 15:57:00,940 INFO COMMIT
+2026-04-11 15:57:00,959 INFO BEGIN (implicit)
+2026-04-11 15:57:00,959 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-11 15:57:00,960 INFO [cached since 167.7s ago] (915363,)
+2026-04-11 15:57:00,964 INFO ROLLBACK
+2026-04-11 15:57:01,727 INFO Got it
+2026-04-11 15:57:01,728 INFO BEGIN (implicit)
+2026-04-11 15:57:01,729 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-11 15:57:01,730 INFO [cached since 168.1s ago] (915363,)
+2026-04-11 15:57:01,735 INFO Host connected to session 915363
+2026-04-11 15:58:12,812 INFO Host disconnected from session 915363
+2026-04-11 15:58:12,813 INFO ROLLBACK
+2026-04-11 15:58:18,742 INFO BEGIN (implicit)
+2026-04-11 15:58:18,743 INFO PRAGMA main.table_info("sessions")
+2026-04-11 15:58:18,744 INFO [raw sql] ()
+2026-04-11 15:58:18,747 INFO PRAGMA main.table_info("players")
+2026-04-11 15:58:18,747 INFO [raw sql] ()
+2026-04-11 15:58:18,750 INFO COMMIT
+2026-04-11 15:58:24,405 INFO afsdfhjaosif
+2026-04-11 15:58:24,407 INFO BEGIN (implicit)
+2026-04-11 15:58:24,426 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-11 15:58:24,426 INFO [generated in 0.00062s] (499410,)
+2026-04-11 15:58:24,437 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-11 15:58:24,437 INFO [generated in 0.00079s] (499410, 'a', 1, 1)
+2026-04-11 15:58:24,442 INFO COMMIT
+2026-04-11 15:58:24,457 INFO BEGIN (implicit)
+2026-04-11 15:58:24,460 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-11 15:58:24,461 INFO [generated in 0.00059s] (499410,)
+2026-04-11 15:58:24,466 INFO ROLLBACK
+2026-04-11 15:58:25,305 INFO Got it
+2026-04-11 15:58:25,307 INFO BEGIN (implicit)
+2026-04-11 15:58:25,311 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-11 15:58:25,311 INFO [generated in 0.00076s] (499410,)
+2026-04-11 15:58:25,318 INFO Host connected to session 499410
+2026-04-11 15:59:05,620 INFO Host disconnected from session 499410
+2026-04-11 15:59:05,620 INFO ROLLBACK
+2026-04-12 19:56:13,524 INFO BEGIN (implicit)
+2026-04-12 19:56:13,526 INFO PRAGMA main.table_info("sessions")
+2026-04-12 19:56:13,526 INFO [raw sql] ()
+2026-04-12 19:56:13,531 INFO PRAGMA main.table_info("players")
+2026-04-12 19:56:13,531 INFO [raw sql] ()
+2026-04-12 19:56:13,533 INFO COMMIT
+2026-04-12 19:56:13,636 INFO afsdfhjaosif
+2026-04-12 19:56:13,637 INFO BEGIN (implicit)
+2026-04-12 19:56:13,642 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 19:56:13,642 INFO [generated in 0.00031s] (967049,)
+2026-04-12 19:56:13,645 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 19:56:13,646 INFO [generated in 0.00032s] (967049, 'a', 1, 1)
+2026-04-12 19:56:13,648 INFO COMMIT
+2026-04-12 19:56:13,663 INFO BEGIN (implicit)
+2026-04-12 19:56:13,664 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 19:56:13,664 INFO [generated in 0.00020s] (967049,)
+2026-04-12 19:56:13,667 INFO ROLLBACK
+2026-04-12 19:56:15,412 INFO afsdfhjaosif
+2026-04-12 19:56:15,412 INFO BEGIN (implicit)
+2026-04-12 19:56:15,412 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 19:56:15,412 INFO [cached since 1.771s ago] (183410,)
+2026-04-12 19:56:15,415 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 19:56:15,415 INFO [cached since 1.77s ago] (183410, 'a', 1, 1)
+2026-04-12 19:56:15,418 INFO COMMIT
+2026-04-12 19:56:15,429 INFO BEGIN (implicit)
+2026-04-12 19:56:15,429 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 19:56:15,430 INFO [cached since 1.765s ago] (183410,)
+2026-04-12 19:56:15,432 INFO ROLLBACK
+2026-04-12 19:56:15,584 INFO afsdfhjaosif
+2026-04-12 19:56:15,585 INFO BEGIN (implicit)
+2026-04-12 19:56:15,586 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 19:56:15,586 INFO [cached since 1.944s ago] (545649,)
+2026-04-12 19:56:15,588 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 19:56:15,588 INFO [cached since 1.943s ago] (545649, 'a', 1, 1)
+2026-04-12 19:56:15,591 INFO COMMIT
+2026-04-12 19:56:15,600 INFO BEGIN (implicit)
+2026-04-12 19:56:15,601 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 19:56:15,601 INFO [cached since 1.937s ago] (545649,)
+2026-04-12 19:56:15,604 INFO ROLLBACK
+2026-04-12 19:57:27,711 INFO afsdfhjaosif
+2026-04-12 19:57:27,712 INFO BEGIN (implicit)
+2026-04-12 19:57:27,712 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 19:57:27,712 INFO [cached since 74.07s ago] (850811,)
+2026-04-12 19:57:27,713 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 19:57:27,714 INFO [cached since 74.07s ago] (850811, 'a', 1, 1)
+2026-04-12 19:57:27,716 INFO COMMIT
+2026-04-12 19:57:27,727 INFO BEGIN (implicit)
+2026-04-12 19:57:27,727 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 19:57:27,727 INFO [cached since 74.06s ago] (850811,)
+2026-04-12 19:57:27,729 INFO ROLLBACK
+2026-04-12 20:00:17,079 INFO BEGIN (implicit)
+2026-04-12 20:00:17,079 INFO PRAGMA main.table_info("sessions")
+2026-04-12 20:00:17,079 INFO [raw sql] ()
+2026-04-12 20:00:17,125 INFO PRAGMA main.table_info("players")
+2026-04-12 20:00:17,125 INFO [raw sql] ()
+2026-04-12 20:00:17,126 INFO COMMIT
+2026-04-12 20:00:45,048 INFO afsdfhjaosif
+2026-04-12 20:00:45,048 INFO BEGIN (implicit)
+2026-04-12 20:00:45,054 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:00:45,054 INFO [generated in 0.00033s] (707211,)
+2026-04-12 20:00:45,057 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 20:00:45,057 INFO [generated in 0.00033s] (707211, 'a', 1, 1)
+2026-04-12 20:00:45,061 INFO COMMIT
+2026-04-12 20:00:45,072 INFO BEGIN (implicit)
+2026-04-12 20:00:45,073 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:00:45,074 INFO [generated in 0.00021s] (707211,)
+2026-04-12 20:00:45,075 INFO ROLLBACK
+2026-04-12 20:00:46,947 INFO afsdfhjaosif
+2026-04-12 20:00:46,948 INFO BEGIN (implicit)
+2026-04-12 20:00:46,948 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:00:46,948 INFO [cached since 1.895s ago] (715860,)
+2026-04-12 20:00:46,951 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 20:00:46,951 INFO [cached since 1.894s ago] (715860, 'a', 1, 1)
+2026-04-12 20:00:46,953 INFO COMMIT
+2026-04-12 20:00:46,964 INFO BEGIN (implicit)
+2026-04-12 20:00:46,964 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:00:46,964 INFO [cached since 1.891s ago] (715860,)
+2026-04-12 20:00:46,966 INFO ROLLBACK
+2026-04-12 20:01:10,705 INFO BEGIN (implicit)
+2026-04-12 20:01:10,706 INFO PRAGMA main.table_info("sessions")
+2026-04-12 20:01:10,706 INFO [raw sql] ()
+2026-04-12 20:01:10,707 INFO PRAGMA main.table_info("players")
+2026-04-12 20:01:10,708 INFO [raw sql] ()
+2026-04-12 20:01:10,709 INFO COMMIT
+2026-04-12 20:02:47,769 INFO afsdfhjaosif
+2026-04-12 20:02:47,770 INFO BEGIN (implicit)
+2026-04-12 20:02:47,775 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:02:47,775 INFO [generated in 0.00024s] (554397,)
+2026-04-12 20:02:47,779 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 20:02:47,779 INFO [generated in 0.00035s] (554397, 'a', 1, 1)
+2026-04-12 20:02:47,781 INFO COMMIT
+2026-04-12 20:02:47,792 INFO BEGIN (implicit)
+2026-04-12 20:02:47,794 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:02:47,794 INFO [generated in 0.00020s] (554397,)
+2026-04-12 20:02:47,796 INFO ROLLBACK
+2026-04-12 20:02:48,469 INFO Got it
+2026-04-12 20:02:48,470 INFO BEGIN (implicit)
+2026-04-12 20:02:48,471 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:02:48,471 INFO [generated in 0.00025s] (554397,)
+2026-04-12 20:02:48,476 INFO Host connected to session 554397
+2026-04-12 20:05:07,432 INFO BEGIN (implicit)
+2026-04-12 20:05:07,433 INFO PRAGMA main.table_info("sessions")
+2026-04-12 20:05:07,433 INFO [raw sql] ()
+2026-04-12 20:05:07,435 INFO PRAGMA main.table_info("players")
+2026-04-12 20:05:07,435 INFO [raw sql] ()
+2026-04-12 20:05:07,436 INFO COMMIT
+2026-04-12 20:05:10,288 INFO Got it
+2026-04-12 20:05:10,289 INFO BEGIN (implicit)
+2026-04-12 20:05:10,293 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:05:10,294 INFO [generated in 0.00029s] (554397,)
+2026-04-12 20:05:10,297 INFO Host connected to session 554397
+2026-04-12 20:05:17,122 INFO afsdfhjaosif
+2026-04-12 20:05:17,124 INFO BEGIN (implicit)
+2026-04-12 20:05:17,125 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:05:17,125 INFO [generated in 0.00026s] (461639,)
+2026-04-12 20:05:17,130 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 20:05:17,130 INFO [generated in 0.00035s] (461639, 'a', 1, 1)
+2026-04-12 20:05:17,133 INFO COMMIT
+2026-04-12 20:05:17,144 INFO BEGIN (implicit)
+2026-04-12 20:05:17,145 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:05:17,146 INFO [generated in 0.00031s] (461639,)
+2026-04-12 20:05:17,148 INFO ROLLBACK
+2026-04-12 20:05:17,316 INFO Got it
+2026-04-12 20:05:17,317 INFO BEGIN (implicit)
+2026-04-12 20:05:17,317 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:05:17,318 INFO [cached since 7.024s ago] (461639,)
+2026-04-12 20:05:17,321 INFO Host connected to session 461639
+2026-04-12 20:06:10,975 INFO Host disconnected from session 554397
+2026-04-12 20:06:10,976 INFO Host disconnected from session 461639
+2026-04-12 20:06:10,976 INFO ROLLBACK
+2026-04-12 20:06:10,976 INFO ROLLBACK
+2026-04-12 20:08:19,229 INFO BEGIN (implicit)
+2026-04-12 20:08:19,229 INFO PRAGMA main.table_info("sessions")
+2026-04-12 20:08:19,229 INFO [raw sql] ()
+2026-04-12 20:08:19,231 INFO PRAGMA main.table_info("players")
+2026-04-12 20:08:19,231 INFO [raw sql] ()
+2026-04-12 20:08:19,232 INFO COMMIT
+2026-04-12 20:08:19,315 INFO Got it
+2026-04-12 20:08:19,316 INFO BEGIN (implicit)
+2026-04-12 20:08:19,321 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:08:19,321 INFO [generated in 0.00031s] (461639,)
+2026-04-12 20:08:19,326 INFO Host connected to session 461639
+2026-04-12 20:08:21,713 INFO Host disconnected from session 461639
+2026-04-12 20:08:21,713 INFO ROLLBACK
+2026-04-12 20:08:27,570 INFO afsdfhjaosif
+2026-04-12 20:08:27,570 INFO BEGIN (implicit)
+2026-04-12 20:08:27,572 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:08:27,573 INFO [generated in 0.00033s] (183028,)
+2026-04-12 20:08:27,576 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 20:08:27,577 INFO [generated in 0.00037s] (183028, 'a', 1, 1)
+2026-04-12 20:08:27,599 INFO COMMIT
+2026-04-12 20:08:27,615 INFO BEGIN (implicit)
+2026-04-12 20:08:27,617 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:08:27,617 INFO [generated in 0.00034s] (183028,)
+2026-04-12 20:08:27,619 INFO ROLLBACK
+2026-04-12 20:08:27,664 INFO Got it
+2026-04-12 20:08:27,665 INFO BEGIN (implicit)
+2026-04-12 20:08:27,665 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:08:27,665 INFO [cached since 8.344s ago] (183028,)
+2026-04-12 20:08:27,669 INFO Host connected to session 183028
+2026-04-12 20:11:00,169 INFO Host message: {'action': 'abort'}
+2026-04-12 20:11:00,169 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:11:00,170 INFO [cached since 160.8s ago] (183028,)
+2026-04-12 20:11:00,172 INFO SELECT sessions.code AS sessions_code, sessions.path AS sessions_path, sessions.current_round AS sessions_current_round, sessions.current_question AS sessions_current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:11:00,172 INFO [generated in 0.00039s] (183028,)
+2026-04-12 20:11:00,177 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE ? = players.session_id
+2026-04-12 20:11:00,177 INFO [generated in 0.00035s] (183028,)
+2026-04-12 20:11:00,181 INFO DELETE FROM sessions WHERE sessions.code = ?
+2026-04-12 20:11:00,181 INFO [generated in 0.00033s] (183028,)
+2026-04-12 20:11:00,184 INFO COMMIT
+2026-04-12 20:11:00,196 INFO Host disconnected from session 183028
+2026-04-12 20:11:07,119 INFO afsdfhjaosif
+2026-04-12 20:11:07,120 INFO BEGIN (implicit)
+2026-04-12 20:11:07,120 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:11:07,120 INFO [cached since 159.5s ago] (629871,)
+2026-04-12 20:11:07,121 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 20:11:07,122 INFO [cached since 159.5s ago] (629871, 'a', 1, 1)
+2026-04-12 20:11:07,124 INFO COMMIT
+2026-04-12 20:11:07,133 INFO BEGIN (implicit)
+2026-04-12 20:11:07,134 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:11:07,134 INFO [cached since 159.5s ago] (629871,)
+2026-04-12 20:11:07,136 INFO ROLLBACK
+2026-04-12 20:11:07,194 INFO Got it
+2026-04-12 20:11:07,195 INFO BEGIN (implicit)
+2026-04-12 20:11:07,196 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:11:07,196 INFO [cached since 167.9s ago] (629871,)
+2026-04-12 20:11:07,201 INFO Host connected to session 629871
+2026-04-12 20:13:16,611 INFO Host disconnected from session 629871
+2026-04-12 20:13:16,612 INFO ROLLBACK
+2026-04-12 20:13:18,052 INFO BEGIN (implicit)
+2026-04-12 20:13:18,053 INFO PRAGMA main.table_info("sessions")
+2026-04-12 20:13:18,053 INFO [raw sql] ()
+2026-04-12 20:13:18,056 INFO PRAGMA main.table_info("players")
+2026-04-12 20:13:18,056 INFO [raw sql] ()
+2026-04-12 20:13:18,057 INFO COMMIT
+2026-04-12 20:13:22,281 INFO Got it
+2026-04-12 20:13:22,282 INFO BEGIN (implicit)
+2026-04-12 20:13:22,286 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:13:22,287 INFO [generated in 0.00024s] (629871,)
+2026-04-12 20:13:22,291 INFO Host connected to session 629871
+2026-04-12 20:14:19,810 INFO Host message: {'action': 'abort'}
+2026-04-12 20:14:19,811 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ?
+2026-04-12 20:14:19,811 INFO [cached since 57.52s ago] (629871,)
+2026-04-12 20:14:19,816 INFO SELECT sessions.code AS sessions_code, sessions.path AS sessions_path, sessions.current_round AS sessions_current_round, sessions.current_question AS sessions_current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:14:19,816 INFO [generated in 0.00045s] (629871,)
+2026-04-12 20:14:19,822 INFO SELECT players.id AS players_id, players.session_id AS players_session_id, players.name AS players_name, players.score AS players_score, players.is_connected AS players_is_connected, players.is_eliminated AS players_is_eliminated, players.is_pending AS players_is_pending 
+FROM players 
+WHERE ? = players.session_id
+2026-04-12 20:14:19,823 INFO [generated in 0.00032s] (629871,)
+2026-04-12 20:14:19,826 INFO DELETE FROM sessions WHERE sessions.code = ?
+2026-04-12 20:14:19,827 INFO [generated in 0.00062s] (629871,)
+2026-04-12 20:14:19,829 INFO COMMIT
+2026-04-12 20:14:19,841 INFO Host disconnected from session 629871
+2026-04-12 20:14:28,195 INFO afsdfhjaosif
+2026-04-12 20:14:28,196 INFO BEGIN (implicit)
+2026-04-12 20:14:28,197 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:14:28,197 INFO [generated in 0.00026s] (423828,)
+2026-04-12 20:14:28,200 INFO INSERT INTO sessions (code, path, current_round, current_question) VALUES (?, ?, ?, ?)
+2026-04-12 20:14:28,200 INFO [generated in 0.00035s] (423828, 'a', 1, 1)
+2026-04-12 20:14:28,240 INFO COMMIT
+2026-04-12 20:14:28,250 INFO BEGIN (implicit)
+2026-04-12 20:14:28,251 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:14:28,251 INFO [generated in 0.00021s] (423828,)
+2026-04-12 20:14:28,253 INFO ROLLBACK
+2026-04-12 20:28:26,320 INFO BEGIN (implicit)
+2026-04-12 20:28:26,321 INFO PRAGMA main.table_info("sessions")
+2026-04-12 20:28:26,321 INFO [raw sql] ()
+2026-04-12 20:28:26,323 INFO PRAGMA main.table_info("players")
+2026-04-12 20:28:26,323 INFO [raw sql] ()
+2026-04-12 20:28:26,324 INFO COMMIT
+2026-04-12 20:28:49,585 INFO BEGIN (implicit)
+2026-04-12 20:28:49,590 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-12 20:28:49,590 INFO [generated in 0.00029s] (432895, 'adsfas')
+2026-04-12 20:28:49,593 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:28:49,593 INFO [generated in 0.00024s] (432895,)
+2026-04-12 20:28:49,594 INFO ROLLBACK
+2026-04-12 20:28:52,715 INFO BEGIN (implicit)
+2026-04-12 20:28:52,715 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-12 20:28:52,715 INFO [cached since 3.125s ago] (432895, 'adsfas')
+2026-04-12 20:28:52,717 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:28:52,718 INFO [cached since 3.125s ago] (432895,)
+2026-04-12 20:28:52,720 INFO ROLLBACK
+2026-04-12 20:28:53,435 INFO BEGIN (implicit)
+2026-04-12 20:28:53,435 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-12 20:28:53,435 INFO [cached since 3.845s ago] (432895, 'adsfas')
+2026-04-12 20:28:53,437 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:28:53,437 INFO [cached since 3.844s ago] (432895,)
+2026-04-12 20:28:53,439 INFO ROLLBACK
+2026-04-12 20:28:53,647 INFO BEGIN (implicit)
+2026-04-12 20:28:53,647 INFO SELECT players.id, players.session_id, players.name, players.score, players.is_connected, players.is_eliminated, players.is_pending 
+FROM players 
+WHERE players.session_id = ? AND players.name = ?
+2026-04-12 20:28:53,647 INFO [cached since 4.057s ago] (432895, 'adsfas')
+2026-04-12 20:28:53,649 INFO SELECT sessions.code, sessions.path, sessions.current_round, sessions.current_question 
+FROM sessions 
+WHERE sessions.code = ?
+2026-04-12 20:28:53,650 INFO [cached since 4.057s ago] (432895,)
+2026-04-12 20:28:53,651 INFO ROLLBACK

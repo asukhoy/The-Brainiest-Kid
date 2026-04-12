@@ -3,14 +3,14 @@ import logging
 from typing import List, Annotated
 
 from fastapi import FastAPI, Depends, HTTPException, File, Path, Form, WebSocket, \
-    WebSocketDisconnect, Body
+    WebSocketDisconnect, Body, Response, Cookie
 from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi.middleware.cors import CORSMiddleware
 
 from models import Player
-from schemas.returns import PlayerReturn, SessionReturn
+from schemas.returns import PlayerReturn, SessionReturn, CookieReturn
 from schemas.requests import JoinRequest, ChangeScoreRequest
 from db import get_db, init_db, close_db
 import crud
@@ -29,7 +29,8 @@ origins = [
     "http://localhost:5173",    # Common React port
     "https://example.com",
     'http://192.168.1.39:5173',
-    'http://10.225.218.237:5173'
+    'http://10.225.218.237:5173',
+    'http://192.168.1.68:5173',
 ]
 
 
@@ -46,10 +47,10 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],      # Or ["*"] to allow all (not recommended for production)
-    allow_credentials=True,     # Allow cookies/auth headers
-    allow_methods=["*"],        # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],        # Allow all headers
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 websocket_manager = WebSocketManager()
@@ -72,6 +73,7 @@ async def change_score(
 
 @app.post('/sessions', response_model=SessionReturn)
 async def create_session(
+        response: Response,
         #question_file_path: str = File(...),
         db_session: AsyncSession = Depends(get_db)
 ):
@@ -83,9 +85,26 @@ async def create_session(
         logger.info(e)
         raise HTTPException(status_code=500, detail=str(e))
 
-
+    response.set_cookie(
+        key='host_session_code',
+        value=str(session.code),
+        max_age=300,
+        httponly=True,
+        samesite='lax',
+        path='/'
+    )
 
     return session.to_dict()
+
+
+@app.get('/sessions/previous', response_model=CookieReturn)
+async def get_host_session(
+        host_session_code: str | None = Cookie(default=None)
+):
+    resp = host_session_code
+    if resp is not None:
+        resp = int(resp)
+    return {'code': resp}
 
 
 @app.post('/sessions/join', response_model=PlayerReturn)
@@ -93,22 +112,19 @@ async def join_session(
         request: JoinRequest = Body(),
         db_session: AsyncSession = Depends(get_db)
 ):
-    try:
-        pl = await crud.get_player_id_by_name(db_session, request.code, request.name)
+    if await handlers.check_player_exists(request.code, request.name, db_session):
         raise HTTPException(status_code=409, detail='User with this name already exists')
 
-    except SQLAlchemyError:
-        await db_session.rollback()
-        raise HTTPException(status_code=500, detail='database error')
-    except ValueError:
+    if not await handlers.check_session_exists(request.code, db_session):
+        raise HTTPException(status_code=404, detail='session not found')
 
-        player = await crud.create_player(request.code, request.name, db_session)
+    player = await crud.create_player(request.code, request.name, db_session)
 
-        message = await handlers.get_all_players(request.code, db_session)
-        await websocket_manager.send_to_host(request.code, message)
+    message = await handlers.get_all_players(request.code, db_session)
+    await websocket_manager.send_to_host(request.code, message)
 
-        await websocket_manager.broadcast(request.code, message)
-        return player.to_dict()
+    await websocket_manager.broadcast(request.code, message)
+    return player.to_dict()
 
 
 
@@ -167,31 +183,35 @@ async def handle_host(
             logger.info(f'Host message: {ans}')
 
             if ans.get('action') == 'abort':
-                raise WebSocketDisconnect()
-            elif ans.get('action') == 'let-in':
                 try:
-                    player = await db_session.get(Player, uuid.UUID(ans.get('player_id')))
-                    player.is_pending = False
-                    await db_session.commit()
+                    await websocket_manager.broadcast(session_code, [])
+                    await handlers.disconnect_all_players(session_code, db_session,
+                                                          websocket_manager)
+
+                except SQLAlchemyError:
+                    await db_session.rollback()
+                    raise HTTPException(status_code=500, detail='database error')
+
+            elif ans.get('action') == 'let-in':
+                logger.info(f'letting in {ans.get('player_id')}')
+                try:
+                    await crud.change_pending_status(db_session, ans.get('player_id'), False)
                     message = await handlers.get_all_players(session_code, db_session)
                     await websocket_manager.send_to_host(session_code, message)
                     await websocket_manager.broadcast(session_code, message)
-                except SQLAlchemyError as e:
+                except SQLAlchemyError:
                     await db_session.rollback()
                     raise HTTPException(status_code=500, detail='database error')
+                except ValueError as e:
+                    raise HTTPException(status_code=404, detail=str(e))
 
 
     except WebSocketDisconnect:
         logger.info(f'Host disconnected from session {session_code}')
-        try:
-            await websocket_manager.broadcast(session_code, [])
-            await handlers.disconnect_all_players(session_code, db_session, websocket_manager)
 
-        except SQLAlchemyError:
-            await db_session.rollback()
-            raise HTTPException(status_code=500, detail='database error')
     except Exception as e:
         logger.error(f'Error in handle_host: {e}')
+        await websocket.close()
 
 
 @app.websocket('/ws/player/{player_id}')
@@ -234,17 +254,12 @@ async def handle_player(
 
     except WebSocketDisconnect:
         logger.info(f'Player disconnected from session {session_code}')
-        try:
 
-            await websocket_manager.disconnect_player(session_code, player_id)
-            message = await handlers.get_all_players(session_code, db_session)
-            await websocket_manager.send_to_host(session_code, message)
-            await websocket_manager.broadcast(session_code, message)
-
-        except SQLAlchemyError:
-            await db_session.rollback()
-            raise HTTPException(status_code=500, detail='database error')
-
+        await websocket_manager.disconnect_player(session_code, player_id)
+        await crud.change_pending_status(db_session, player_id, False)
+        message = await handlers.get_all_players(session_code, db_session)
+        await websocket_manager.send_to_host(session_code, message)
+        await websocket_manager.broadcast(session_code, message)
     except Exception as e:
         logger.error(f'Error in handle_player: {e}')
         await websocket.close()
