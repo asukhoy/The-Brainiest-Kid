@@ -15,5 +15,4 @@ async def check_player_exists(
     except ValueError:
         return False
     except SQLAlchemyError:
-        await db_session.rollback()
         raise

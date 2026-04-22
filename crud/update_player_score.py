@@ -17,6 +17,4 @@ async def update_player_score(
         raise ValueError('Player not found')
 
     player.score = new_score
-    await db_session.commit()
-    await db_session.refresh(player)
     return player

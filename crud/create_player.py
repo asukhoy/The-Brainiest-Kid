@@ -11,12 +11,10 @@ async def create_player(
         db_session: AsyncSession
 ):
     player = Player(
-        session_id=session_code,
+        session_code=session_code,
         name=name
     )
 
     db_session.add(player)
-    await db_session.commit()
-    await db_session.refresh(player)
 
     return player

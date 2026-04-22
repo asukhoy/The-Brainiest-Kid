@@ -2,18 +2,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 import logging
 
-from models import Player
+from models import Player, PlayerState
 
 logger = logging.getLogger('app')
 
 
-async def change_pending_status(
+async def change_player_state(
     db_session: AsyncSession,
     player_id: uuid.UUID,
-    status: bool
+    state: PlayerState
 ):
     player = await db_session.get(Player, player_id)
     if player is None:
         raise ValueError('Player not found')
-    player.is_pending = status
-    await db_session.commit()
+    player.state = state

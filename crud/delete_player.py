@@ -15,4 +15,3 @@ async def delete_player(
     if player is None:
         raise ValueError('Player not found')
     await db_session.delete(player)
-    await db_session.commit()

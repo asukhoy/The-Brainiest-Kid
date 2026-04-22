@@ -14,4 +14,3 @@ async def delete_session(
     if session is None:
         raise ValueError('Session not found')
     await db_session.delete(session)
-    await db_session.commit()

@@ -4,4 +4,4 @@ import uuid
 
 class JoinRequest(BaseModel):
     name: str
-    code: int
+    session_code: int

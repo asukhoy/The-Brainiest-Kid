@@ -2,4 +2,4 @@ from pydantic import BaseModel
 
 
 class CookieReturn(BaseModel):
-    code: int | None
+    session_code: int | None

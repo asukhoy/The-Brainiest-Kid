@@ -9,9 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi.middleware.cors import CORSMiddleware
 
-from models import Player
+from models import Player, GameSession, PlayerState, GameMode
 from schemas.returns import PlayerReturn, SessionReturn, CookieReturn
-from schemas.requests import JoinRequest, ChangeScoreRequest
+import schemas.requests
 from db import get_db, init_db, close_db
 import crud
 from managers import GameManager, WebSocketManager
@@ -31,6 +31,8 @@ origins = [
     'http://192.168.1.39:5173',
     'http://10.225.218.237:5173',
     'http://192.168.1.68:5173',
+    'http://10.111.84.60:5173',
+    'http://10.111.84.210:5000'
 ]
 
 
@@ -54,77 +56,89 @@ app.add_middleware(
 )
 
 websocket_manager = WebSocketManager()
+game_manager = GameManager()
 
 @app.post('/change_score', response_model=PlayerReturn)
 async def change_score(
-        request: ChangeScoreRequest,
+        request: schemas.requests.ChangeScoreRequest,
         db_session: AsyncSession = Depends(get_db)
 ):
     try:
         player = await crud.update_player_score(db_session, request.player_id, request.score)
+        await db_session.commit()
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except SQLAlchemyError:
         raise HTTPException(status_code=500, detail='database error')
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    return player.to_dict()
+    return player
 
 
 @app.post('/sessions', response_model=SessionReturn)
 async def create_session(
-        response: Response,
-        #question_file_path: str = File(...),
+        request: schemas.requests.CreateSessionRequest,
         db_session: AsyncSession = Depends(get_db)
 ):
-    question_file_path = 'a'
+
     try:
-        session = await crud.create_session(db_session, question_file_path)
+        session = await crud.create_session(db_session, request.game_data)
     except SQLAlchemyError as e:
         await db_session.rollback()
         logger.info(e)
         raise HTTPException(status_code=500, detail=str(e))
 
-    response.set_cookie(
-        key='host_session_code',
-        value=str(session.code),
-        max_age=300,
-        httponly=True,
-        samesite='lax',
-        path='/'
-    )
+    return session
 
-    return session.to_dict()
-
-
-@app.get('/sessions/previous', response_model=CookieReturn)
-async def get_host_session(
-        host_session_code: str | None = Cookie(default=None)
+@app.post('/sessions/reconnect', response_model=SessionReturn)
+async def reconnect_session(
+        request: schemas.requests.ReconnectSessionRequest,
+        db_session: AsyncSession = Depends(get_db)
 ):
-    resp = host_session_code
-    if resp is not None:
-        resp = int(resp)
-    return {'code': resp}
+    try:
+        session = await db_session.get(GameSession, request.session_code)
+    except SQLAlchemyError as e:
+        await db_session.rollback()
+        logger.info(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if session.secret != request.secret:
+        raise HTTPException(status_code=401, detail='invalid session secret')
+
+    return session
 
 
 @app.post('/sessions/join', response_model=PlayerReturn)
 async def join_session(
-        request: JoinRequest = Body(),
+        request: schemas.requests.JoinRequest = Body(),
         db_session: AsyncSession = Depends(get_db)
 ):
-    if await handlers.check_player_exists(request.code, request.name, db_session):
+    if await handlers.check_player_exists(request.session_code, request.name, db_session):
         raise HTTPException(status_code=409, detail='User with this name already exists')
 
-    if not await handlers.check_session_exists(request.code, db_session):
+    if not await handlers.check_session_exists(request.session_code, db_session):
         raise HTTPException(status_code=404, detail='session not found')
 
-    player = await crud.create_player(request.code, request.name, db_session)
 
-    message = await handlers.get_all_players(request.code, db_session)
-    await websocket_manager.send_to_host(request.code, message)
+    try:
+        player = await crud.create_player(request.session_code, request.name, db_session)
+        await db_session.commit()
+        await db_session.refresh(player)
+    except SQLAlchemyError as e:
+        await db_session.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
-    await websocket_manager.broadcast(request.code, message)
-    return player.to_dict()
+    await handlers.update_lobby(db_session, request.session_code, websocket_manager)
+    pl = PlayerReturn.model_validate(player)
+    try:
+        game_data = await crud.get_game_data(db_session, pl.id)
+        pl.game_data = game_data
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    return pl
 
 
 
@@ -143,9 +157,11 @@ async def kick_player(
         player_id: uuid.UUID = Path(),
         db_session: AsyncSession = Depends(get_db)
 ):
-    code = await crud.get_code_by_player_id(db_session, player_id)
+
     try:
+        session_code = await crud.get_code_by_player_id(db_session, player_id)
         await crud.delete_player(db_session, player_id)
+        await db_session.commit()
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except SQLAlchemyError:
@@ -153,12 +169,8 @@ async def kick_player(
         raise HTTPException(status_code=500, detail='database error')
 
 
-    message = await handlers.get_all_players(code, db_session)
-
-    await websocket_manager.send_to_host(code, message)
-    await websocket_manager.broadcast(code, message)
-    await websocket_manager.send_to_player(code, player_id, message)
-    await websocket_manager.disconnect_player(code, player_id)
+    await handlers.update_lobby(db_session, session_code, websocket_manager)
+    await websocket_manager.disconnect_player(session_code, player_id)
 
     return {'detail': 'player removed'}
 
@@ -173,7 +185,11 @@ async def handle_host(
     await websocket_manager.connect_host(session_code, websocket)
 
     message = await handlers.get_all_players(session_code, db_session)
-    await websocket_manager.send_to_host(session_code, message)
+    mes = {
+        'action': 'update-players',
+        'data': message
+    }
+    await websocket_manager.send_to_host(session_code, mes)
 
     logger.info(f'Host connected to session {session_code}')
 
@@ -181,29 +197,249 @@ async def handle_host(
         while True:
             ans = await websocket.receive_json()
             logger.info(f'Host message: {ans}')
+            match ans.get('action'):
+                case 'abort':
+                    try:
+                        await websocket_manager.send_to_players(session_code,
+                    {
+                                'action': 'abort'
+                            }
+                        )
+                        await websocket_manager.disconnect_host(session_code)
 
-            if ans.get('action') == 'abort':
-                try:
-                    await websocket_manager.broadcast(session_code, [])
-                    await handlers.disconnect_all_players(session_code, db_session,
-                                                          websocket_manager)
+                        await crud.delete_session(db_session, session_code)
+                        await db_session.commit()
 
-                except SQLAlchemyError:
-                    await db_session.rollback()
-                    raise HTTPException(status_code=500, detail='database error')
+                    except SQLAlchemyError:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail='database error')
 
-            elif ans.get('action') == 'let-in':
-                logger.info(f'letting in {ans.get('player_id')}')
-                try:
-                    await crud.change_pending_status(db_session, ans.get('player_id'), False)
-                    message = await handlers.get_all_players(session_code, db_session)
-                    await websocket_manager.send_to_host(session_code, message)
-                    await websocket_manager.broadcast(session_code, message)
-                except SQLAlchemyError:
-                    await db_session.rollback()
-                    raise HTTPException(status_code=500, detail='database error')
-                except ValueError as e:
-                    raise HTTPException(status_code=404, detail=str(e))
+                case 'let-in':
+                    logger.info(f'letting in {ans.get('player_id')}')
+                    try:
+                        cnt = await crud.get_session_capacity(db_session, session_code)
+                        if cnt == 12:
+                            continue
+                        await crud.change_player_state(
+                                                        db_session,
+                                                        uuid.UUID(ans.get('data').get('player_id')),
+                                                        PlayerState.CONNECTED
+                                                       )
+                        await db_session.commit()
+                        await handlers.update_lobby(db_session, session_code, websocket_manager)
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+
+                case 'kick':
+                    player_id = uuid.UUID(ans.get('data').get('player_id'))
+
+                    try:
+                        session_code = await crud.get_code_by_player_id(db_session, player_id)
+                        await crud.delete_player(db_session, player_id)
+                        await db_session.commit()
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+                    except SQLAlchemyError:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail='database error')
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'kick',
+                        'data': {
+                            'player_id': player_id
+                        }
+                    })
+
+                    await handlers.update_lobby(db_session, session_code, websocket_manager)
+                    await websocket_manager.disconnect_player(session_code, player_id)
+
+                case 'swap':
+                    player_id_exist = uuid.UUID(ans.get('data').get('player_id'))
+                    player_id_swap = uuid.UUID(ans.get('data').get('player_id_swap'))
+
+                    logger.info(f'Swapping {player_id_exist} to {player_id_swap}')
+
+                    try:
+                        await crud.swap_players(db_session, player_id_exist, player_id_swap)
+                        await crud.delete_player(db_session, player_id_exist)
+                        await db_session.commit()
+                        await handlers.update_lobby(db_session, session_code, websocket_manager)
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+
+                    await handlers.update_lobby(db_session, session_code, websocket_manager)
+
+
+                case 'next-round':
+                    try:
+                        await crud.change_round(db_session, session_code)
+                        await crud.clear_turns(db_session, session_code)
+                        await db_session.commit()
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'next-round'
+                    })
+
+                case 'next-mode':
+                    try:
+                        mode = ans.get('data').get('mode')
+                        await crud.change_mode(db_session, session_code, mode)
+                        await db_session.commit()
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'next-round',
+                        'data' : {
+                            'mode': mode
+                        }
+                    })
+
+                case 'players-eliminated':
+                    try:
+                        for player in ans.get('data').get('eliminated_players_ids'):
+                            await crud.change_player_state(db_session, uuid.UUID(player),
+                                                           PlayerState.ELIMINATED)
+                        await db_session.commit()
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'players-eliminated',
+                        'data' : ans.get('data')
+
+                    })
+
+                case 'show-leaderboard':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'show-leaderboard'
+                    })
+
+                case 'round1:next-question':
+                    try:
+                        await crud.question_answered(db_session, session_code, 1,
+                                                     int(ans.get('data').get('question')))
+                        await db_session.commit()
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round1-next-question',
+                        'data': ans.get('data')
+                    })
+
+                case 'round1:show-answer':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round1-show-answer'
+                    })
+
+                case 'round2:show-categories':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round2-show-categories'
+                    })
+
+                case 'round2:start-category':
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round2-show-categories',
+                        'data': ans.get('data')
+                    })
+
+                case 'round2:next-question':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round2-next-question',
+                        'data': ans.get('data')
+                    })
+
+                case 'round2:category-answered':
+                    try:
+                        await crud.add_score_to_player(db_session, uuid.UUID(ans.get('data').get(
+                            'player_id')), int(ans.get('data').get('added_score')))
+                        await crud.question_answered(db_session, session_code, 2,
+                                                     int(ans.get('data').get('category_idx')))
+                        await db_session.commit()
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round2-category-answered',
+                        'data': ans.get('data')
+                    })
+
+                case 'round3:assign-order':
+                    try:
+                        for i, pl in enumerate(ans.get('data').get('player_id_order')):
+                            await crud.change_player_turn(db_session, uuid.UUID(pl), i)
+                        await db_session.commit()
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round3:assign-order',
+                        'data': {
+                            'player_id_order': ans.get('data').get('player_id_order')
+                        }
+                    })
+
+                case 'round3:assign-categories':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round3-assign-categories',
+                        'data': ans.get('data')
+                    })
+
+                case 'round3:show-categories':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round3-show-categories'
+                    })
+
+                case 'round3:select-cell':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round3-select-cell',
+                        'data': ans.get('data')
+                    })
+
+                case 'round3:cell-answered':
+                    try:
+                        pl_id = uuid.UUID(ans.get('data').get('player_id'))
+                        score = int(ans.get('data').get('added_score'))
+                        await crud.add_score_to_player(db_session, pl_id, score)
+                        await db_session.commit()
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round3-cell-answered',
+                        'data': ans.get('data')
+                    })
+
+                case 'round3:finish-round':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round3-finish-round',
+                    })
 
 
     except WebSocketDisconnect:
@@ -226,14 +462,11 @@ async def handle_player(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except SQLAlchemyError:
-        await db_session.rollback()
         raise HTTPException(status_code=500, detail='database error')
 
     await websocket_manager.connect_player(player_id, websocket, session_code)
     logger.info(f'Player: {player_id} connected to session {session_code}')
 
-    message = await handlers.get_all_players(session_code, db_session)
-    await websocket_manager.send_to_player(session_code, player_id, message)
 
     logger.info(f'message sent to Player: {player_id} connected to session {session_code}')
 
@@ -241,25 +474,85 @@ async def handle_player(
         while True:
             ans = await websocket.receive_json()
             logger.info(f'Player message: {ans}')
-            if ans['action'] == 'left':
-                try:
-                    await crud.delete_player(db_session, player_id)
-                    raise WebSocketDisconnect()
+            match ans.get('action'):
+                case 'left':
+                    try:
+                        await crud.delete_player(db_session, player_id)
+                        await db_session.commit()
+                        raise WebSocketDisconnect()
 
-                except SQLAlchemyError:
-                    await db_session.rollback()
-                    raise HTTPException(status_code=500, detail='database error')
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
 
+                case 'decoder:finished':
+                    try:
+                        turn = await crud.find_maximum_turn(db_session, session_code)
+                        await crud.change_player_turn(db_session, player_id, turn + 1)
+                        await db_session.commit()
+                    except SQLAlchemyError as e:
+                        await db_session.rollback()
+                        raise HTTPException(status_code=500, detail=str(e))
+                    except ValueError as e:
+                        raise HTTPException(status_code=404, detail=str(e))
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'decoder:finished',
+                    })
+
+                case 'tiebreak-finished':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'tiebreak-finished'
+                    })
+
+                case 'round1:answered':
+                    if ans.get('data').get('is_correct'):
+                        try:
+                            await crud.add_score_to_player(db_session, player_id, 1)
+                            await db_session.commit()
+                        except SQLAlchemyError as e:
+                            await db_session.rollback()
+                            raise HTTPException(status_code=500, detail=str(e))
+                        except ValueError as e:
+                            raise HTTPException(status_code=404, detail=str(e))
+
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round1-answered',
+                        'data': ans.get('data')
+                    })
+
+                case 'round2:question-skip':
+                    await websocket_manager.broadcast(session_code, {
+                        'action': 'round2-question-skip',
+                        'data': ans.get('data')
+                    })
 
 
     except WebSocketDisconnect:
-        logger.info(f'Player disconnected from session {session_code}')
+        logger.info(f'Player {player_id} disconnected from session {session_code}')
 
         await websocket_manager.disconnect_player(session_code, player_id)
-        await crud.change_pending_status(db_session, player_id, False)
-        message = await handlers.get_all_players(session_code, db_session)
-        await websocket_manager.send_to_host(session_code, message)
-        await websocket_manager.broadcast(session_code, message)
+        try:
+            player = await db_session.get(Player, player_id)
+        except SQLAlchemyError as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+        if player.state == PlayerState.PENDING:
+            try:
+                await crud.delete_player(db_session, player_id)
+                await db_session.commit()
+            except SQLAlchemyError as e:
+                await db_session.rollback()
+                raise HTTPException(status_code=500, detail=str(e))
+        else:
+            try:
+                await crud.change_player_state(db_session, player_id, PlayerState.DISCONNECTED)
+                await db_session.commit()
+            except SQLAlchemyError as e:
+                await db_session.rollback()
+                logger.error(f'Error in handle_host: {e}')
+                raise HTTPException(status_code=500, detail=str(e))
+        await handlers.update_lobby(db_session, session_code, websocket_manager)
     except Exception as e:
         logger.error(f'Error in handle_player: {e}')
         await websocket.close()

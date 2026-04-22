@@ -12,7 +12,7 @@ async def get_player_id_by_name(
         session_code: int,
         name: str
 ):
-    query = select(Player).where(Player.session_id == session_code, Player.name == name)
+    query = select(Player).where(Player.session_code == session_code, Player.name == name)
     res = await db_session.execute(query)
     player = res.scalars().first()
     if player is None:

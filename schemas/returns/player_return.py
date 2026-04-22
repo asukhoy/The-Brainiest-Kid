@@ -1,14 +1,16 @@
 from pydantic import BaseModel, ConfigDict
 import uuid
 
+from models import PlayerState
+
 
 class PlayerReturn(BaseModel):
     id: uuid.UUID
-    session_id: int
+    session_code: int
     name: str
     score: int
-    is_connected: bool
-    is_eliminated: bool
-    is_pending: bool
+    state: PlayerState
+    turn: int
+    game_data: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

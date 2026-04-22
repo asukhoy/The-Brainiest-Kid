@@ -9,9 +9,9 @@ logger = logging.getLogger('app')
 
 async def check(
         db_session: AsyncSession,
-        code: int
+        session_code: int
 ):
-    query = select(GameSession).where(GameSession.code == code)
+    query = select(GameSession).where(GameSession.session_code == session_code)
     res = await db_session.execute(query)
     session = res.scalars().first()
     if session is None:
@@ -21,19 +21,19 @@ async def check(
 
 async def create_session(
         db_session: AsyncSession,
-        path: str
+        game_data: str
 ):
-    code = 1
+    session_code = 1
     resp = '1'
     logger.info('afsdfhjaosif')
     while True:
-        code = random.randint(100000, 1000000)
-        resp = await check(db_session, code)
+        session_code = random.randint(100000, 1000000)
+        resp = await check(db_session, session_code)
         if resp:
             break
     session = GameSession(
-        path=path,
-        code=code
+        game_data=game_data,
+        session_code=session_code
     )
 
     db_session.add(session)
