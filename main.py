@@ -459,12 +459,18 @@ async def handle_player(
     logger.info('Got it to endpoint')
     try:
         session_code = await crud.get_code_by_player_id(db_session, player_id)
+        state = await crud.get_player_state(db_session, player_id)
+        if state == PlayerState.DISCONNECTED:
+            await crud.change_player_state(db_session, player_id, PlayerState.CONNECTED)
+        await db_session.commit()
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except SQLAlchemyError:
+        await db_session.rollback()
         raise HTTPException(status_code=500, detail='database error')
 
     await websocket_manager.connect_player(player_id, websocket, session_code)
+    await handlers.update_lobby(db_session, session_code, websocket_manager)
     logger.info(f'Player: {player_id} connected to session {session_code}')
 
 
@@ -546,11 +552,13 @@ async def handle_player(
                 raise HTTPException(status_code=500, detail=str(e))
         else:
             try:
-                await crud.change_player_state(db_session, player_id, PlayerState.DISCONNECTED)
-                await db_session.commit()
+                state = await crud.get_player_state(db_session, player_id)
+                if state != PlayerState.ELIMINATED:
+                    await crud.change_player_state(db_session, player_id, PlayerState.DISCONNECTED)
+                    await db_session.commit()
             except SQLAlchemyError as e:
                 await db_session.rollback()
-                logger.error(f'Error in handle_host: {e}')
+                logger.error(f'Error in handle_player: {e}')
                 raise HTTPException(status_code=500, detail=str(e))
         await handlers.update_lobby(db_session, session_code, websocket_manager)
     except Exception as e:

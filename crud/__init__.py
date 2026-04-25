@@ -18,6 +18,7 @@ from .change_player_turn import change_player_turn
 from .question_answered import question_answered
 from .add_score_to_player import add_score_to_player
 from .get_game_data import get_game_data
+from .get_player_state import get_player_state
 
 
 __all__ = [
@@ -40,5 +41,6 @@ __all__ = [
     'change_player_turn',
     'question_answered',
     'add_score_to_player',
-    'get_game_data'
+    'get_game_data',
+    'get_player_state'
 ]

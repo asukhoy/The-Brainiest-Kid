@@ -631,3 +631,22 @@ WHERE players.session_code = ?
 2026-04-23 00:42:09,583 INFO sended to host 897724
 2026-04-23 00:42:09,584 ERROR send_to_host error: Unexpected ASGI message 'websocket.send', after sending 'websocket.close' or response already completed.
 2026-04-23 00:42:09,584 INFO ROLLBACK
+2026-04-23 00:42:54,808 INFO Host disconnected from session 960392
+2026-04-23 00:42:54,808 INFO ROLLBACK
+2026-04-23 00:44:18,816 INFO Player 4d02d38a-0e9a-4b10-a823-49e9c6c7c407 disconnected from session 960392
+2026-04-23 00:44:18,816 INFO SELECT players.id AS players_id, players.session_code AS players_session_code, players.name AS players_name, players.score AS players_score, players.state AS players_state, players.turn AS players_turn 
+FROM players 
+WHERE players.id = ?
+2026-04-23 00:44:18,817 INFO [cached since 531.4s ago] ('4d02d38a0e9a4b10a82349e9c6c7c407',)
+2026-04-23 00:44:18,819 INFO DELETE FROM players WHERE players.id = ?
+2026-04-23 00:44:18,819 INFO [cached since 129.3s ago] ('4d02d38a0e9a4b10a82349e9c6c7c407',)
+2026-04-23 00:44:18,820 INFO COMMIT
+2026-04-23 00:44:18,830 INFO BEGIN (implicit)
+2026-04-23 00:44:18,831 INFO SELECT players.id, players.session_code, players.name, players.score, players.state, players.turn 
+FROM players 
+WHERE players.session_code = ?
+2026-04-23 00:44:18,831 INFO [cached since 531.4s ago] (960392,)
+2026-04-23 00:44:18,832 INFO message: []
+2026-04-23 00:44:18,832 INFO sended to host 960392
+2026-04-23 00:44:18,832 ERROR send_to_host error: Unexpected ASGI message 'websocket.send', after sending 'websocket.close' or response already completed.
+2026-04-23 00:44:18,832 INFO ROLLBACK
