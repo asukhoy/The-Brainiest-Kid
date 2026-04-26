@@ -650,3 +650,11 @@ WHERE players.session_code = ?
 2026-04-23 00:44:18,832 INFO sended to host 960392
 2026-04-23 00:44:18,832 ERROR send_to_host error: Unexpected ASGI message 'websocket.send', after sending 'websocket.close' or response already completed.
 2026-04-23 00:44:18,832 INFO ROLLBACK
+2026-04-25 23:55:30,450 INFO BEGIN (implicit)
+2026-04-25 23:55:30,451 INFO PRAGMA main.table_info("sessions")
+2026-04-25 23:55:30,451 INFO [raw sql] ()
+2026-04-25 23:55:30,455 INFO PRAGMA main.table_info("players")
+2026-04-25 23:55:30,455 INFO [raw sql] ()
+2026-04-25 23:55:30,456 INFO PRAGMA main.table_info("questions")
+2026-04-25 23:55:30,456 INFO [raw sql] ()
+2026-04-25 23:55:30,457 INFO COMMIT

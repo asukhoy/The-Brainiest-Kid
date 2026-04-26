@@ -441,6 +441,12 @@ async def handle_host(
                         'action': 'round3-finish-round',
                     })
 
+                case _:
+                    await websocket_manager.broadcast(session_code, {
+                        'action': ans.get('action'),
+                        'data': ans.get('data')
+                    })
+
 
     except WebSocketDisconnect:
         logger.info(f'Host disconnected from session {session_code}')
@@ -530,6 +536,11 @@ async def handle_player(
                 case 'round2:question-skip':
                     await websocket_manager.broadcast(session_code, {
                         'action': 'round2-question-skip',
+                        'data': ans.get('data')
+                    })
+                case _:
+                    await websocket_manager.broadcast(session_code, {
+                        'action': ans.get('action'),
                         'data': ans.get('data')
                     })
 
