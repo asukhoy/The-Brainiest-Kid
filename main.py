@@ -339,30 +339,30 @@ async def handle_host(
                         await db_session.rollback()
                         raise HTTPException(status_code=500, detail=str(e))
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round1-next-question',
+                        'action': 'round1:next-question',
                         'data': ans.get('data')
                     })
 
                 case 'round1:show-answer':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round1-show-answer'
+                        'action': 'round1:show-answer'
                     })
 
                 case 'round2:show-categories':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round2-show-categories'
+                        'action': 'round2:show-categories'
                     })
 
                 case 'round2:start-category':
 
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round2-show-categories',
+                        'action': 'round2:show-categories',
                         'data': ans.get('data')
                     })
 
                 case 'round2:next-question':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round2-next-question',
+                        'action': 'round2:next-question',
                         'data': ans.get('data')
                     })
 
@@ -404,18 +404,18 @@ async def handle_host(
 
                 case 'round3:assign-categories':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round3-assign-categories',
+                        'action': 'round3:assign-categories',
                         'data': ans.get('data')
                     })
 
                 case 'round3:show-categories':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round3-show-categories'
+                        'action': 'round3:show-categories'
                     })
 
                 case 'round3:select-cell':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round3-select-cell',
+                        'action': 'round3:select-cell',
                         'data': ans.get('data')
                     })
 
@@ -438,7 +438,7 @@ async def handle_host(
 
                 case 'round3:finish-round':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round3-finish-round',
+                        'action': 'round3:finish-round',
                     })
 
                 case _:
@@ -512,9 +512,9 @@ async def handle_player(
                         'action': 'decoder:finished',
                     })
 
-                case 'tiebreak-finished':
+                case 'tiebreak:finished':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'tiebreak-finished'
+                        'action': 'tiebreak:finished'
                     })
 
                 case 'round1:answered':
@@ -529,13 +529,13 @@ async def handle_player(
                             raise HTTPException(status_code=404, detail=str(e))
 
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round1-answered',
+                        'action': 'round1:answered',
                         'data': ans.get('data')
                     })
 
                 case 'round2:question-skip':
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round2-question-skip',
+                        'action': 'round2:question-skip',
                         'data': ans.get('data')
                     })
                 case _:
