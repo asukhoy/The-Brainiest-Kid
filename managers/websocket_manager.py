@@ -13,8 +13,8 @@ class WebSocketManager:
     async def connect_host(self, session_code: int, websocket: WebSocket):
         await websocket.accept()
         self._active_connections[session_code] = websocket
-        self._session_players[session_code] = set()
-        self._player_connections[session_code] = {}
+        self._session_players.setdefault(session_code, set())
+        self._player_connections.setdefault(session_code, {})
 
     async def connect_player(self, player_id: uuid.UUID, websocket: WebSocket, session_code):
         await websocket.accept()
