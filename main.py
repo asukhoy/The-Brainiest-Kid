@@ -539,7 +539,7 @@ async def handle_player(
                         'data': ans.get('data')
                     })
                 case 'next-round':
-                    logger.error("FFFFFUUUUUUUCCCCCCKKKKKK!!!!!!!!")
+                    logger.error("Next roud error")
                 case _:
                     await websocket_manager.broadcast(session_code, {
                         'action': ans.get('action'),
