@@ -354,7 +354,7 @@ async def handle_host(
                 case 'round2:start-category':
 
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round2:show-categories',
+                        'action': 'round2:start-category',
                         'data': ans.get('data')
                     })
 
@@ -378,7 +378,7 @@ async def handle_host(
                         raise HTTPException(status_code=404, detail=str(e))
 
                     await websocket_manager.broadcast(session_code, {
-                        'action': 'round2-category-answered',
+                        'action': 'round2:category-answered',
                         'data': ans.get('data')
                     })
 
@@ -508,6 +508,7 @@ async def handle_player(
 
                     await websocket_manager.broadcast(session_code, {
                         'action': 'decoder:finished',
+                        'data': ans.get('data')
                     })
 
                 case 'tiebreak:finished':
